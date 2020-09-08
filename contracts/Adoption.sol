@@ -9,4 +9,8 @@ contract Adoption {
         adopters[petId] = msg.sender; // msg.sender denotes the address which called this function
         return petId;
     }
+    // view means the function will not modify the state of the contract
+    function getAdopters() public view returns (address[16] memory) { // memory gives the data location for the variable
+        return adopters;
+    }
 }
