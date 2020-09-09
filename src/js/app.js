@@ -1,3 +1,4 @@
+// global App object to manage application
 App = {
   web3Provider: null,
   contracts: {},
@@ -24,10 +25,25 @@ App = {
   },
 
   initWeb3: async function() {
-    /*
-     * Replace me...
-     */
-
+    // if modern dapp browser
+    if (window.ethereum) {
+      App.web3Provider = window.ethereum;
+      try {
+        // request account access
+        await window.ethereum.enable();
+      } catch (error) {
+        console.error('User denied account access');
+      }
+    }
+    // if legacy dapp browser
+    else if (window.web3) {
+      App.web3Provider = window.web3.currentProvider;
+    }
+    // if no injected web3 instance, fall back to ganache -- insecure for production; development environments ONLY
+    else {
+      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+    }
+    web3 = new Web3(App.web3Provider);
     return App.initContract();
   },
 
