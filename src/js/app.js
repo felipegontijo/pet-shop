@@ -6,8 +6,8 @@ App = {
   init: async function() {
     // Load pets.
     $.getJSON('../pets.json', function(data) {
-      var petsRow = $('#petsRow');
-      var petTemplate = $('#petTemplate');
+      let petsRow = $('#petsRow');
+      let petTemplate = $('#petTemplate');
 
       for (i = 0; i < data.length; i ++) {
         petTemplate.find('.panel-title').text(data[i].name);
@@ -68,15 +68,28 @@ App = {
   },
 
   markAdopted: function(adopters, account) {
-    /*
-     * Replace me...
-     */
+    let adoptionInstance;
+
+    App.contracts.Adoption.deployed().then(function(instance) {
+      adoptionInstance = instance;
+    
+      return adoptionInstance.getAdopters.call(); // using call allows us to read data from the blockchain without sending a transaction
+    }).then(function(adopters) {
+      for (i = 0; i < adopters.length; i++) {
+        // find address stored for pet
+        if (adopters[i] !== '0x0000000000000000000000000000000000000000') { // ethereum initializes the addresses array with empty addresses
+          $('.panel-pet').eq(i).find('button').text('Success').attr('disabled', true); // disable adopt button and change text to success
+        }
+      }
+    }).catch(function(err) {
+      console.log(err.message);
+    });
   },
 
   handleAdopt: function(event) {
     event.preventDefault();
 
-    var petId = parseInt($(event.target).data('id'));
+    let petId = parseInt($(event.target).data('id'));
 
     /*
      * Replace me...
